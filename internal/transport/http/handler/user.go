@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"backend-auth-service-app/internal/entities"
 	responses "backend-auth-service-app/pkg/errors"
 	httpResponser "backend-auth-service-app/pkg/http"
+	"encoding/json"
 	"net/http"
 )
 
@@ -12,6 +14,15 @@ func User(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "POST":
+		var user entities.User
+		jsonBody := json.NewDecoder(r.Body)
+
+		err := jsonBody.Decode(&user)
+		if err != nil {
+			resp.Message = responses.ErrBadRequest.Error()
+			return
+		}
+
 	case "GET":
 	case "PUT":
 	case "DELETE":
