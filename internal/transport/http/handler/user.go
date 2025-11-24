@@ -6,6 +6,8 @@ import (
 	httpResponser "backend-auth-service-app/pkg/http"
 	"encoding/json"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func User(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +32,20 @@ func User(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case "GET":
+		userIdStr := r.URL.Query().Get("user_id")
+		userID, err := uuid.Parse(userIdStr)
+		if err != nil {
+			resp.Message = responses.ErrBadRequest.Error()
+			return
+		}
+
+		user, err := service.GetUser(userID)
+		if err != nil {
+			return
+		}
+
+		resp.Payload = user
+
 	case "PUT":
 	case "DELETE":
 	default:

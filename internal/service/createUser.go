@@ -38,6 +38,7 @@ func CreateUser(email string, password string) (err error) {
 		err = responses.ErrInternalServer
 		return
 	}
+	
 	newUser = entities.User{
 		User_ID:      uuid.New(),
 		Email:        email,
