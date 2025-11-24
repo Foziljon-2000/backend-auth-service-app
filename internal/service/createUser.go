@@ -4,13 +4,20 @@ import (
 	"backend-auth-service-app/internal/entities"
 	"backend-auth-service-app/internal/storage"
 	responses "backend-auth-service-app/pkg/errors"
+
+	"github.com/google/uuid"
 )
 
 func CreateUser(user entities.User) (err error) {
 	// valid
 
 	user_v2, err := storage.GetUserByEmail(user.Email)
-	if err != responses.ErrUserLoginAlreadyExists || err != nil {
+	if err != responses.ErrUserLoginAlreadyExists && err != nil {
+		return
+	}
+
+	if user.Email == "" && user.PasswordHash == "" {
+		err = responses.ErrBadRequest
 		return
 	}
 
@@ -26,6 +33,8 @@ func CreateUser(user entities.User) (err error) {
 		err = responses.ErrInternalServer
 		return
 	}
+
+	user.User_ID = uuid.New()
 
 	err = storage.CreateUser(user)
 	if err != nil {
