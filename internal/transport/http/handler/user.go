@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"backend-auth-service-app/internal/entities"
 	"backend-auth-service-app/internal/service"
 	responses "backend-auth-service-app/pkg/errors"
 	httpResponser "backend-auth-service-app/pkg/http"
@@ -15,17 +14,17 @@ func User(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "POST":
-		var user entities.User
-		jsonBody := json.NewDecoder(r.Body)
+		var newUser CreateUserDTO
 
-		err := jsonBody.Decode(&user)
+		err := json.NewDecoder(r.Body).Decode(&newUser)
 		if err != nil {
 			resp.Message = responses.ErrBadRequest.Error()
 			return
 		}
 
-		err = service.CreateUser(user)
-		if err != nil {
+		defer r.Body.Close()
+
+		if err := service.CreateUser(newUser.Email, newUser.Password); err != nil {
 			resp.Message = err.Error()
 			return
 		}
